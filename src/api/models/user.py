@@ -1,10 +1,40 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **kwargs):
+        user = self.model(email=email, **kwargs)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_staffuser(self, email, password):
+        user = self.create_user(
+            email,
+            password=password,
+        )
+        user.staff = True
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        user = self.create_user(
+            email,
+            password=password,
+        )
+        user.staff = True
+        user.admin = True
+        user.save(using=self._db)
+        return user
 
 
 class PadawanUser(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["password"]
+
+    objects = UserManager()
 
     class UserStatus(models.TextChoices):
         TEACHER = "Учитель"
