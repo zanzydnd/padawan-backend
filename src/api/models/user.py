@@ -46,4 +46,4 @@ class PadawanUserContactChoices(models.Model):
     class Meta:
         verbose_name = "Контакт пользователя"
         verbose_name_plural = "Контакты пользователей"
-        db_table = "contact_services"
+        db_table = "user_contact"
