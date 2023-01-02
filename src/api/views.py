@@ -24,7 +24,7 @@ class UserApiViewModelSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'], name='Get Current User', url_path="info")
     def current_user(self, request, *args, **kwargs):
         if not request.auth:
-            raise PermissionDenied(detail="Ауттенфицируйтесь.")
+            raise PermissionDenied(detail="Аутенфицируйтесь.")
 
         token = Token.objects.get(key=request.auth)
 

@@ -5,7 +5,7 @@ from rest_framework import routers
 
 from api.views import UserApiViewModelSet
 from rest_framework.authtoken import views as auth_views
-
+from classroom.urls import urlpatterns as classroom_urls
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -24,7 +24,7 @@ user_router.register("user", UserApiViewModelSet, basename="User")
 
 urlpatterns = [
     *user_router.urls,
-
+    *classroom_urls,
     path("auth/", auth_views.obtain_auth_token),
     re_path("swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
