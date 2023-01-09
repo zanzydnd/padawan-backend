@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -11,7 +13,8 @@ class Classroom(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название")
     description = models.TextField(verbose_name="Описание")
 
-    unique_code = models.CharField(max_length=255, unique=True, verbose_name="Уникальный код",
+    unique_code = models.CharField(max_length=255, unique=True, default=uuid.uuid4().hex[:5].upper(),
+                                   verbose_name="Уникальный код",
                                    help_text="Генерируется Автоматически")
 
     created_at = models.DateTimeField(auto_now=True)

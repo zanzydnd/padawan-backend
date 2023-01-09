@@ -4,6 +4,10 @@ from rest_framework import serializers
 User = get_user_model()
 
 
+class EmptyBodySerializer(serializers.Serializer):
+    pass
+
+
 class UserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.Meta.model.objects.create_user(**validated_data)
