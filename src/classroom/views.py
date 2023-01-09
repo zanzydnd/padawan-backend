@@ -4,8 +4,6 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
-
-from api.serializers import EmptyBodySerializer
 from classroom.models import Classroom
 from classroom.serializers import ClassroomSerializer
 
@@ -29,8 +27,6 @@ class ClassroomPermission(BasePermission):
 
 class ClassroomModelViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
-
-    # serializer_class = ClassroomSerializer
     permission_classes = [ClassroomPermission, IsAuthenticated]
 
     def get_queryset(self):
@@ -68,7 +64,5 @@ class ClassroomModelViewSet(viewsets.ModelViewSet):
         url_path="(?P<code>\w+)/enter"
     )
     def enter_room(self, request, code):
-        print(self.action)
         get_object_or_404(Classroom,unique_code=code).students.add(self.request.user)
-        # Classroom.objects.get_or_404(unique_code=code).students.add(self.request.user)
         return Response(status=200)

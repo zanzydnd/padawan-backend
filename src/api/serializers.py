@@ -4,10 +4,6 @@ from rest_framework import serializers
 User = get_user_model()
 
 
-class EmptyBodySerializer(serializers.Serializer):
-    pass
-
-
 class UserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.Meta.model.objects.create_user(**validated_data)
@@ -23,5 +19,5 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name')
-        read_only_fields = ('id', 'is_active', 'staff', 'admin', 'status', 'email')
+        fields = ('id', 'first_name', 'last_name', 'is_active', 'status', 'email')
+        read_only_fields = ('id', 'is_active', 'status', 'email')
