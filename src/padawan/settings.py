@@ -29,20 +29,28 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "admin_interface",
+    "colorfield",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # installed apps
     "rest_framework",
     "rest_framework.authtoken",
     "drf_yasg",
+    "sortedm2m",
+    "adminsortable2",
+    "nested_admin",
+
     # my apps
     "classroom",
-    "assignment"
+    "assignment",
     "api",
+    "api_test"
 ]
 
 MIDDLEWARE = [
@@ -60,7 +68,7 @@ ROOT_URLCONF = 'padawan.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates"),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

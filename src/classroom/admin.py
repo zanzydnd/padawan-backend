@@ -1,3 +1,11 @@
-from django.contrib import admin
+from .admin_classes import admin
 
-# Register your models here.
+__all__ = [
+    "admin"
+]
+
+from .admin_classes.classroom import ClassroomAdmin
+
+from .models import Classroom
+
+admin.site.register(Classroom, ClassroomAdmin)

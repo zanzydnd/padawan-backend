@@ -1,0 +1,46 @@
+{
+  "name": "Scenario",
+  "max_points": 10,
+  "config": {
+    "timeout": 300
+  },
+  "tests": [
+    {
+      "method": "GET",
+      "url": "/api/test1/",
+      "name": "asad1",
+      "body": "asd=2&qwe=3",
+      "headers": "{\"Content-Type\": \"application/x-www-form-urlencoded\"}",
+      "validators": [
+        {
+          "expected_status": [
+            201,
+            200
+          ],
+          "points": 1
+        },
+        {
+          "comparator": {
+            "expected": "сборка или просто значение",
+            "actual": "сборка или просто значение(если ничего не указывается - полностью ответ)"
+          },
+          "points": 8
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "name": "asad2",
+      "url": "/api/test2/",
+      "body": "asd=4&qwe=5",
+      "headers": "{\"Content-Type\": \"application/x-www-form-urlencoded\"}"
+    },
+    {
+      "method": "DELETE",
+      "name": "asad3",
+      "url": "/api/test3/",
+      "body": "asd=6&qwe=7",
+      "headers": "{\"Content-Type\": \"application/x-www-form-urlencoded\"}"
+    }
+  ]
+}

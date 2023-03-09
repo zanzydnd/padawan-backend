@@ -1,4 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.db import models
+
+User = get_user_model()
 
 
 class Assignment(models.Model):
@@ -20,6 +23,13 @@ class Assignment(models.Model):
     static_analysis_blocks = models.ManyToManyField(to="assignment.StaticCodeAnalysisBlock",
                                                     through="assignment.StaticCodeAnalysisPoint",
                                                     related_name="assignments")
+    submissions = models.ManyToManyField(to=User, through="AssignmentSubmission", )
+
+
+class AssignmentSubmission(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    date = models.DateField(auto_created=True)  # дата поступления
 
 
 class StaticCodeAnalysisPoint(models.Model):
@@ -33,7 +43,3 @@ class StaticCodeAnalysisBlock(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
 
-
-class Scenario(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
-    max_points = models.PositiveIntegerField()
