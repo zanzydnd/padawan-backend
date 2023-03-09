@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(blank=True, max_length=255, null=True)),
                 ('max_points', models.PositiveIntegerField()),
-                ('config', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='scenario', to='api_test.scenarioconfig', verbose_name='Конфиг')),
+                ('config', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='scenario', to='testing.scenarioconfig', verbose_name='Конфиг')),
             ],
         ),
         migrations.CreateModel(
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('headers', models.JSONField(verbose_name='Заголовки')),
                 ('body', models.TextField(verbose_name='Тело Запроса')),
                 ('name', models.CharField(help_text='Название шага должно быть уникальным в рамках сценарияд', max_length=255, verbose_name='Название шага')),
-                ('scenario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='steps', to='api_test.scenario', verbose_name='Сценарий')),
+                ('scenario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='steps', to='testing.scenario', verbose_name='Сценарий')),
             ],
             options={
                 'ordering': ['order'],

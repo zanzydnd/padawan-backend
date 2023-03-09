@@ -31,7 +31,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "admin_interface",
     "colorfield",
-    'django.contrib.admin',
+    "nested_admin",
+
+    "padawan.apps.CustomAdminConfig",
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,17 +43,17 @@ INSTALLED_APPS = [
 
     # installed apps
     "rest_framework",
-    "rest_framework.authtoken",
+    # "rest_framework.authtoken",
     "drf_yasg",
     "sortedm2m",
     "adminsortable2",
-    "nested_admin",
 
     # my apps
+    "core",
     "classroom",
     "assignment",
     "api",
-    "api_test"
+    "testing"
 ]
 
 MIDDLEWARE = [

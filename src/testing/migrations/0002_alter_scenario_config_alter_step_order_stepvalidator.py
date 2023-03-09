@@ -7,14 +7,14 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api_test', '0001_initial'),
+        ('testing', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='scenario',
             name='config',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='scenario', to='api_test.scenarioconfig', verbose_name='Конфиг'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='scenario', to='testing.scenarioconfig', verbose_name='Конфиг'),
         ),
         migrations.AlterField(
             model_name='step',
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('points', models.PositiveIntegerField(default=0, help_text='Кол-во баллов за успех')),
                 ('actual', models.TextField(blank=True, null=True)),
                 ('expected', models.TextField()),
-                ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='validators', to='api_test.step')),
+                ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='validators', to='testing.step')),
             ],
             options={
                 'ordering': ['order'],

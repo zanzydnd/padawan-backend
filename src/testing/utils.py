@@ -2,11 +2,12 @@ import json
 import re
 from pprint import pprint
 from typing import List, Union, Optional
+from ast import literal_eval
 
 from django.core.files.uploadedfile import UploadedFile
 from ruamel import yaml
 
-from api_test.models import Scenario, ScenarioConfig, Step
+from testing.models import Scenario, ScenarioConfig, Step
 from padawan.exceptions import ImportingFileException, ScenarioValidationError
 
 
@@ -129,16 +130,30 @@ def scenario_db_to_dict(scenario: Scenario) -> dict:
         "tests": []
     }
 
-    scenario_steps = Step.objects.filter(scenario=scenario)
+    scenario_steps = Step.objects.filter(scenario=scenario).prefetch_related("validators")
 
     for step in scenario_steps:
+        validators = [
+            {
+                validator.type: {
+                    "points": validator.points,
+                    **(
+                        {"expected_status": literal_eval(validator.expected)}
+                        if validator.type == validator.ValidatorType.STATUS
+                        else {"actual": validator.actual, "expected": validator.expected}
+                    )
+                }
+            }
+            for validator in step.validators.all()
+        ]
         result.get("tests").append(
             {
                 "method": step.method,
                 "url": step.url,
                 "name": step.name,
                 "body": step.body,
-                "headers": step.headers
+                "headers": step.headers,
+                "validators": validators
             }
         )
 

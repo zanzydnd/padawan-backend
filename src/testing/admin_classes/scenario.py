@@ -11,8 +11,8 @@ from django.forms import ValidationError
 from nested_admin.nested import NestedModelAdmin, NestedTabularInline, NestedStackedInline
 
 from padawan.exceptions import ImportingFileException, ScenarioValidationError
-from api_test.models import Step, Scenario, ScenarioConfig, StepValidator
-from api_test.utils import imported_file_to_dict, scenario_dict_to_scenario_db, scenario_db_to_dict, \
+from testing.models import Step, Scenario, ScenarioConfig, StepValidator
+from testing.utils import imported_file_to_dict, scenario_dict_to_scenario_db, scenario_db_to_dict, \
     validate_imported_scenario_dict
 from padawan.forms import ImportFileForm
 

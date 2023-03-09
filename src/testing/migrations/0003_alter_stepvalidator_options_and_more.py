@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api_test', '0002_alter_scenario_config_alter_step_order_stepvalidator'),
+        ('testing', '0002_alter_scenario_config_alter_step_order_stepvalidator'),
     ]
 
     operations = [
