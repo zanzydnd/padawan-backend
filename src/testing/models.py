@@ -82,3 +82,18 @@ class AlgScenario(models.Model):
 
     def __str__(self):
         return f"Алгоритм: {self.name}"
+
+    class Meta:
+        verbose_name = "Сценарий(Алгоритмы)"
+        verbose_name_plural = "Сценарии(Алгоритмы)"
+
+
+class AlgScenarioStep(Orderable):
+    input = models.TextField(verbose_name="Подается на вход")
+    expected = models.TextField(verbose_name="Ожидаемый результат")
+
+    scenario = models.ForeignKey(AlgScenario, related_name="steps", verbose_name="Сценарий", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Тест"
+        verbose_name_plural = "Тесты"

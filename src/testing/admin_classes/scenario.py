@@ -82,3 +82,4 @@ class ScenarioAdmin(NestedModelAdmin):
         return render(
             request, "admin/fileform.html", payload
         )
+
