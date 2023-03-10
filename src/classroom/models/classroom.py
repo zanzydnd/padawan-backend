@@ -28,6 +28,9 @@ class Classroom(models.Model):
 
         return super().save(force_insert, force_update, using, update_fields)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = "Комната"
         verbose_name_plural = "Комнаты"

@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from sortedm2m.fields import SortedManyToManyField
+
+from testing.models import Scenario, AlgScenario
 
 User = get_user_model()
 
@@ -25,6 +28,11 @@ class Assignment(models.Model):
                                                     related_name="assignments")
     submissions = models.ManyToManyField(to=User, through="AssignmentSubmission", )
 
+    task_file = models.FileField(verbose_name="Файл с Заданием", upload_to="tasks", null=True, blank=True)
+
+    api_scenarios = SortedManyToManyField(Scenario, related_name="assigments", verbose_name="Сценарии",blank=True)
+    alg_scenarios = SortedManyToManyField(AlgScenario, related_name="assigments", verbose_name="Сценарии",blank=True)
+
 
 class AssignmentSubmission(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -42,4 +50,3 @@ class StaticCodeAnalysisPoint(models.Model):
 class StaticCodeAnalysisBlock(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-

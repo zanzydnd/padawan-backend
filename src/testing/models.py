@@ -19,7 +19,7 @@ class Scenario(models.Model):
                                   related_name="scenario", blank=True)
 
     def __str__(self):
-        return self.name
+        return f"Api: {self.name}"
 
     class Meta:
         verbose_name = "Сценарий(Api задание)"
@@ -74,3 +74,11 @@ class StepValidator(models.Model):
     class Meta:
         verbose_name = "Валидатор шага"
         verbose_name_plural = "Валидаторы шага"
+
+
+class AlgScenario(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True, verbose_name="Название сценария")
+    max_points = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"Алгоритм: {self.name}"
