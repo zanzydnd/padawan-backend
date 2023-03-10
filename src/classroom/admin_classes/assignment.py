@@ -26,6 +26,9 @@ class AssignmentAdmin(admin.ModelAdmin):
             return self.default_fields + ["alg_scenarios", ]
         return self.default_fields
 
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_teacher
+
 
 class SubmissionAdmin(admin.ModelAdmin):
     model = AssignmentSubmission

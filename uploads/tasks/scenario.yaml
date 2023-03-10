@@ -1,0 +1,23 @@
+config:
+  timeout: 300
+
+name: 'Scenario'
+
+tests:
+  - name: 'asad1'
+    method: "GET"
+    url: '/api/test1/'
+    body: 'asd=2&qwe=3'
+    headres: '{"Content-Type": "application/x-www-form-urlencoded"}'
+
+  - name: 'asad2'
+    method: "POST"
+    url: '/api/test2/'
+    body: 'asd=4&qwe=5'
+    headers: '{"Content-Type": "application/x-www-form-urlencoded"}'
+
+  - name: 'asad3'
+    method: "DELETE"
+    url: '/api/test3/'
+    body: 'asd=6&qwe=7'
+    headers: '{"Content-Type": "application/x-www-form-urlencoded"}'
