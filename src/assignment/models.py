@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
+from classroom.models import Classroom
 from testing.models import Scenario, AlgScenario
 
 User = get_user_model()
@@ -12,6 +13,7 @@ class Assignment(models.Model):
         algorithm = "AL", "Алгоритмическое"
         api = "API", "Проверка API"
 
+    classroom = models.ForeignKey(Classroom, related_name="assignments", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, verbose_name="Название")
     description = models.TextField(max_length=255, verbose_name="Описание")
     assigment_type = models.CharField(max_length=255, choices=Type.choices, default=Type.api)
@@ -30,8 +32,8 @@ class Assignment(models.Model):
 
     task_file = models.FileField(verbose_name="Файл с Заданием", upload_to="tasks", null=True, blank=True)
 
-    api_scenarios = SortedManyToManyField(Scenario, related_name="assigments", verbose_name="Сценарии",blank=True)
-    alg_scenarios = SortedManyToManyField(AlgScenario, related_name="assigments", verbose_name="Сценарии",blank=True)
+    api_scenarios = SortedManyToManyField(Scenario, related_name="assigments", verbose_name="Сценарии", blank=True)
+    alg_scenarios = SortedManyToManyField(AlgScenario, related_name="assigments", verbose_name="Сценарии", blank=True)
 
 
 class AssignmentSubmission(models.Model):

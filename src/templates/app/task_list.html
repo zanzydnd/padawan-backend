@@ -3,22 +3,22 @@
 {% block content %}
     <div class="container bg-light">
         <div class="accordion" id="accordionExample">
-            {% for classroom in object_list %}
+            {% for assignment in object_list %}
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse{{ classroom.id }}"
+                                data-bs-target="#collapse{{ assignment.id }}"
                                 aria-expanded="true" aria-controls="collapseOne">
-                            {{ classroom.name }}
+                            {{ assignment.name }}
                         </button>
                     </h2>
-                    <div id="collapse{{ classroom.id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    <div id="collapse{{ assignment.id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
                          data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             <strong><a
-                                    href="{% url 'classroom_detail' classroom.unique_code %}">{{ classroom.name }}</a></strong>
+                                    href="{% url 'assignment_detail' assignment.id %}">{{ assignment.name }}</a></strong>
                             <br/>
-                            {{ classroom.description }}
+                            {{ assignment.description }}
                         </div>
                     </div>
                 </div>

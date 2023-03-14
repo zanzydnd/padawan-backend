@@ -1,0 +1,58 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <div class="container bg-light">
+        <div class="container">
+            <h1>Информация по классу</h1>
+            <br/>
+            <div class="row">
+                <div class="col-4">
+                    <div class="card" style="width: 15rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ teacher.first_name }} {{ teacher.last_name }}</h5>
+                            <p class="card-text">Контакты:</p>
+                            <ul>
+                                {% for contact in teacher.possible_contacts.all %}
+                                    <li>
+                                        {{ contact.value }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <h2>{{ object.name }}</h2>
+                    <p>{{ object.description }}</p>
+                </div>
+            </div>
+        </div>
+
+        <br/>
+        <div>
+            <h3>Список заданий</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Создано</th>
+                    <th scope="col">До</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for assignment in assignments %}
+                    <tr class="{% if assignment.past_due_date %}table-danger {% else %} table-success{% endif %}">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{% url 'assignment_detail' assignment.id %}">{{ assignment.name }}</a></td>
+                        <td>{{ assignment.created_at }}</td>
+                        <td>{{ assignment.due_to }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
