@@ -1,46 +1,74 @@
 {
   "name": "Scenario",
-  "max_points": 10,
-  "config": {
-    "timeout": 300
-  },
   "tests": [
     {
-      "method": "GET",
-      "url": "/api/test1/",
-      "name": "asad1",
-      "body": "asd=2&qwe=3",
-      "headers": "{\"Content-Type\": \"application/x-www-form-urlencoded\"}",
+      "method": "POST",
+      "url": "/api/v1/user/",
+      "name": "Register_User",
+      "body": "{\"email\":\"test_user@mail.ru\",\"password\": \"123qwe123\",\"name\": \"имя\"}",
+      "headers": "{\"Content-Type\": \"application/json\"}",
       "validators": [
         {
-          "expected_status": [
+          "allowed_response_statuses": [
             201,
             200
           ],
+          "expected_response_body": "{\"email\":\"test_user@mail.ru\",\"password\": null,\"name\": \"имя\",\"id\": 3}",
+          "timeout": 100,
           "points": 1
-        },
-        {
-          "comparator": {
-            "expected": "сборка или просто значение",
-            "actual": "сборка или просто значение(если ничего не указывается - полностью ответ)"
-          },
-          "points": 8
         }
       ]
     },
     {
       "method": "POST",
-      "name": "asad2",
-      "url": "/api/test2/",
-      "body": "asd=4&qwe=5",
-      "headers": "{\"Content-Type\": \"application/x-www-form-urlencoded\"}"
+      "url": "/api/v1/auth/",
+      "name": "Auth_User",
+      "body": "{\"username\":\"test_user@mail.ru\",\"password\": \"123qwe123\"}",
+      "headers": "{\"Content-Type\": \"application/json\"}",
+      "validators": [
+        {
+          "allowed_response_statuses": [
+            201,
+            200
+          ],
+          "timeout": 100,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "/api/v1/user/${Register_User:Response:id}$",
+      "name": "Get_User",
+      "body": "",
+      "headers": "{\"Content-Type\": \"application/json\"}",
+      "validators": [
+        {
+          "allowed_response_statuses": [
+            201,
+            200
+          ],
+          "expected_response_body": "{\"id\": ${Register_User:Response:id}$, \"name\": \"имя\", \"email\": \"test_user@mail.ru\"}",
+          "timeout": 100,
+          "points": 1
+        }
+      ]
     },
     {
       "method": "DELETE",
-      "name": "asad3",
-      "url": "/api/test3/",
-      "body": "asd=6&qwe=7",
-      "headers": "{\"Content-Type\": \"application/x-www-form-urlencoded\"}"
+      "url": "/api/v1/user/${Register_User:Response:id}$",
+      "name": "Remove_User",
+      "body": "",
+      "headers": "{\"Content-Type\": \"application/json\"}",
+      "validators": [
+        {
+          "allowed_response_statuses": [
+            204
+          ],
+          "timeout": 100,
+          "points": 1
+        }
+      ]
     }
   ]
 }

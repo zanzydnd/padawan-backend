@@ -14,7 +14,8 @@
 
 
         <div>
-            <form type="post">
+            {{ form.errors }}
+            <form type="post" method="{% url 'submit_assignment' object.id %}">
                 <div class="form-group">
                     <h2>Сдать Задание</h2>
 
@@ -27,7 +28,7 @@
         </div>
 
         <div>
-            <form type="post">
+            <form type="post" method="{% url 'submit_assignment' object.id %}">
                 <h2>Сдать задание</h2>
                 <label for="url">Ссылка на репозиторий</label>
                 <input id="url" name="url" type="url">

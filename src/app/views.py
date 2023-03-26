@@ -8,8 +8,9 @@ from django.views.generic import CreateView, DetailView, ListView
 
 from assignment.models import Assignment
 from classroom.models import Classroom
-from .forms import SignUpForm
-from .services import ClassroomService, AssigmentService
+from .forms import SignUpForm, SubmitAssignmentForm
+from .services import ClassroomService, AssigmentService, SubmissionService
+from .tasks import send_submission
 
 
 class CustomLoginView(LoginView):
@@ -109,5 +110,18 @@ class AssignmentDetailView(LoginRequiredMixin, DetailView):
         return self.service.get_service_by_id(id=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
+        send_submission.delay(submission_id=3, github_url="https://gitlab.com/dane4kq/technokratos-test")
         context = super().get_context_data(**kwargs)
         return context
+
+
+class SubmissionCreateView(LoginRequiredMixin, CreateView):
+    form_class = SubmitAssignmentForm
+    service = SubmissionService()
+    template_name = "app/task_detail.html"
+
+    def post(self, request, *args, **kwargs):
+        Form = self.get_form_class()
+        form = Form(request.POST, request.FILES)
+        if form.is_valid():
+            self.service.submit_task(form, request.user, self.kwargs.get("assinment_id"))

@@ -7,7 +7,7 @@ from ast import literal_eval
 from django.core.files.uploadedfile import UploadedFile
 from ruamel import yaml
 
-from testing.models import Scenario, ScenarioConfig, Step
+from testing.models import Scenario, Step, StepValidator
 from padawan.exceptions import ImportingFileException, ScenarioValidationError
 
 
@@ -22,8 +22,8 @@ def _check_error_in_template_var(string: str, test_names: set) -> Optional[str]:
     """
         Returns wrong referenced test name or None if nothing wrong
     """
-    for template_var_usage in re.findall("{.*}", string):
-        ref_test_name = template_var_usage.strip("{").strip("}").split(":")[0]
+    for template_var_usage in re.findall("\${.*}", string):
+        ref_test_name = template_var_usage.strip("${").strip("}").split(":")[0]
         if ref_test_name not in test_names:
             return ref_test_name
 
@@ -101,21 +101,23 @@ def scenario_dict_to_scenario_db(imported: dict) -> tuple[Scenario, List[Step]]:
     except ScenarioValidationError as e:
         raise ImportingFileException(str(e))
 
-    config = ScenarioConfig(timeout=(imported.get("timeout") if imported.get("timeout") else 10))
-    config.save()
-
     scenario = Scenario(
         name=imported.get("name"),
-        config=config,
         max_points=(imported.get("max_points") if imported.get("max_points") else 0)
     )
     scenario.save()
-
+    print(imported)
     steps_in_order = []
     for i, step in enumerate(imported.get("tests")):
-        steps_in_order.append(
-            Step(order=i, **step, scenario=scenario)
-        )
+        validators = step.pop("validators")
+        step_db = Step(order=i, **step, scenario=scenario)
+        step_db.save()
+        for validator_dct in validators:
+            StepValidator.objects.create(
+                step=step_db,
+                **validator_dct
+            )
+        steps_in_order.append(step_db)
 
     return scenario, steps_in_order
 
@@ -123,9 +125,6 @@ def scenario_dict_to_scenario_db(imported: dict) -> tuple[Scenario, List[Step]]:
 def scenario_db_to_dict(scenario: Scenario) -> dict:
     result = {
         "name": scenario.name,
-        "config": {
-            "timeout": scenario.config.timeout
-        },
         "max_points": scenario.max_points,
         "tests": []
     }
@@ -135,14 +134,10 @@ def scenario_db_to_dict(scenario: Scenario) -> dict:
     for step in scenario_steps:
         validators = [
             {
-                validator.type: {
-                    "points": validator.points,
-                    **(
-                        {"expected_status": literal_eval(validator.expected)}
-                        if validator.type == validator.ValidatorType.STATUS
-                        else {"actual": validator.actual, "expected": validator.expected}
-                    )
-                }
+                "allowed_response_statuses": validator.allowed_response_statuses,
+                "expected_response_body": validator.expected_response_body,
+                "timeout": validator.timeout,
+                "points": validator.points,
             }
             for validator in step.validators.all()
         ]

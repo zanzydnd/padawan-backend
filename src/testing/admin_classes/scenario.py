@@ -11,7 +11,7 @@ from django.forms import ValidationError
 from nested_admin.nested import NestedModelAdmin, NestedTabularInline, NestedStackedInline
 
 from padawan.exceptions import ImportingFileException, ScenarioValidationError
-from testing.models import Step, Scenario, ScenarioConfig, StepValidator
+from testing.models import Step, Scenario,StepValidator
 from testing.utils import imported_file_to_dict, scenario_dict_to_scenario_db, scenario_db_to_dict, \
     validate_imported_scenario_dict
 from padawan.forms import ImportFileForm
@@ -71,9 +71,8 @@ class ScenarioAdmin(NestedModelAdmin):
             try:
                 scenario_dict = imported_file_to_dict(request.FILES["file"])
                 scenario, list_of_steps = scenario_dict_to_scenario_db(scenario_dict)
-                Step.objects.bulk_create(list_of_steps)
                 return HttpResponseRedirect(
-                    reverse("admin:api_test_scenario_change", kwargs={"object_id": scenario.id}))
+                    reverse("admin:testing_scenario_change", kwargs={"object_id": scenario.id}))
             except ImportingFileException as e:
                 messages.error(request, e)
         form = ImportFileForm()

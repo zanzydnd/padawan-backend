@@ -15,7 +15,8 @@ urlpatterns = [
     path("classrom/<str:unique_code>/", ClassroomDetailView.as_view(), name="classroom_detail"),
 
     path("assignment/", AssignmentListView.as_view(), name="assignment_list"),
-    path("assignment/<int:pk>/", AssignmentDetailView.as_view(), name="assignment_detail")
+    path("assignment/<int:pk>/", AssignmentDetailView.as_view(), name="assignment_detail"),
+    path("assignment/<int:assinment_id>/submit", AssignmentDetailView.as_view(), name="submit_assignment")
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

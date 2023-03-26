@@ -183,3 +183,7 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+REDIS_CONNECTION = os.environ.get("REDIS_CONNECTION", "redis://localhost:6379/0")
+
+CELERY_BROKER_URL = REDIS_CONNECTION

@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Case, When, Value
 from django.shortcuts import get_object_or_404
 
+from app.exceptions import SubmissionException
+from app.forms import SubmitAssignmentForm
 from assignment.models import Assignment
 from classroom.models import Classroom
 
@@ -33,3 +35,31 @@ class ClassroomService:
 class AssigmentService:
     def get_service_by_id(self, id: int):
         return get_object_or_404(Assignment, id=id)
+
+
+class SubmissionService:
+    def _submit_alg_task(self, assignment: Assignment, user: User, url: str):
+        pass
+
+    def _submit_api_task(self, assignment: Assignment, user: User, file):
+        pass
+
+    def _validate_submission(self, assignment: Assignment, user: User):
+        if assignment.one_try and assignment.submissions.filter(student=user).exists():
+            raise SubmissionException("Задание можно сдавать только один раз.")
+        if assignment.submissions.filter(status="Проверяется", student=user).exists():
+            raise SubmissionException("Задание находится на проверке.")
+
+    def submit_task(self, form: SubmitAssignmentForm, user: User, assignment_id: int):
+        assignment = get_object_or_404(Assignment, id=assignment_id)
+
+        self._validate_submission(assignment, user)
+        SubmissionThrough = assignment.submissions.through
+        SubmissionThrough.objects.create(
+            assignment=assignment,
+            student=user,
+            status="Проверяется"
+        )
+        if assignment.assigment_type == Assignment.Type.api:
+            return self._submit_api_task(assignment, user, form.url)
+        return self._submit_alg_task(assignment, user, form.file)

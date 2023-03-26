@@ -35,11 +35,18 @@ class Assignment(models.Model):
     api_scenarios = SortedManyToManyField(Scenario, related_name="assigments", verbose_name="Сценарии", blank=True)
     alg_scenarios = SortedManyToManyField(AlgScenario, related_name="assigments", verbose_name="Сценарии", blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class AssignmentSubmission(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    status = models.CharField(max_length=25, default="В процессе")
     date = models.DateField(auto_created=True)  # дата поступления
+
+    def __str__(self):
+        return f"{self.student.name} - {self.assignment.name}"
 
 
 class StaticCodeAnalysisPoint(models.Model):

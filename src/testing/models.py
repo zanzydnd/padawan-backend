@@ -1,22 +1,12 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from padawan.models import Orderable
 
 
-class ScenarioConfig(models.Model):
-    timeout = models.PositiveIntegerField(default=10, verbose_name="Таймаут от зароса")
-
-    class Meta:
-        verbose_name = "Конфиг Сценария(Api задание)"
-        verbose_name_plural = "Конфииги Сценариев(Api задание)"
-
-
 class Scenario(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     max_points = models.PositiveIntegerField()
-
-    config = models.OneToOneField(ScenarioConfig, on_delete=models.SET_NULL, null=True, verbose_name="Конфиг",
-                                  related_name="scenario", blank=True)
 
     def __str__(self):
         return f"Api: {self.name}"
@@ -59,16 +49,15 @@ class Step(Orderable):
 
 
 class StepValidator(models.Model):
-    class ValidatorType(models.TextChoices):
-        STATUS = "Валидатор статуса", "expected_status"
-        COMPARATOR = "Сравниватель", "comparator"
+    allowed_response_statuses = ArrayField(
+        models.PositiveIntegerField(),
+        verbose_name="Разрешенные статусы",
+        null=True
+    )
+    expected_response_body = models.TextField(verbose_name="Ожидаемое тело ответа", null=True)
+    timeout = models.PositiveIntegerField(verbose_name="Таймаут", default=60)
 
-    type = models.CharField(choices=ValidatorType.choices, default=ValidatorType.STATUS, max_length=200)
-
-    points = models.PositiveIntegerField(default=0, help_text="Кол-во баллов за успех")
-    actual = models.TextField(null=True, blank=True)
-    expected = models.TextField()
-
+    points = models.PositiveIntegerField(verbose_name="Баллы")
     step = models.ForeignKey(Step, related_name="validators", on_delete=models.CASCADE)
 
     class Meta:
