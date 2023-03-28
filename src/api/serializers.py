@@ -21,3 +21,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'first_name', 'last_name', 'is_active', 'status', 'email')
         read_only_fields = ('id', 'is_active', 'status', 'email')
+
+
+class SubmissionTestResult(serializers.Serializer):
+    submission_id = serializers.IntegerField()
+    scenarios = serializers.DictField()

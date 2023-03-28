@@ -41,7 +41,7 @@
       "url": "/api/v1/user/${Register_User:Response:id}$",
       "name": "Get_User",
       "body": "",
-      "headers": "{\"Content-Type\": \"application/json\"}",
+      "headers": "{\"Content-Type\": \"application/json\", \"Authorization\": \"Token ${Auth_User:Response:token}$\"}",
       "validators": [
         {
           "allowed_response_statuses": [
@@ -59,7 +59,7 @@
       "url": "/api/v1/user/${Register_User:Response:id}$",
       "name": "Remove_User",
       "body": "",
-      "headers": "{\"Content-Type\": \"application/json\"}",
+      "headers": "{\"Content-Type\": \"application/json\", \"Authorization\": \"Token ${Auth_User:Response:token}$\"}",
       "validators": [
         {
           "allowed_response_statuses": [

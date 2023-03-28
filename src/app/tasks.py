@@ -15,7 +15,7 @@ def send_submission(submission_id: int, file_path: str = None, github_url: str =
     }
     if submission.assignment.assigment_type == submission.assignment.Type.api:
         to_send["scenarios"] = [
-            scenario_db_to_dict(scenario)
+            {**scenario_db_to_dict(scenario), "id": scenario.id}
             for scenario in submission.assignment.api_scenarios.all()
         ]
         to_send["git_url"] = github_url
