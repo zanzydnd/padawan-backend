@@ -35,15 +35,7 @@ class SignUpForm(UserCreationForm):
 
 
 class SubmitAssignmentForm(forms.Form):
-    file = forms.FileField(required=False)
-    url = forms.URLField(required=False)
-
-    def clean(self):
-        if not self.cleaned_data["file"] and not self.cleaned_data["url"]:
-            raise ValidationError("Заполните форму")
+    url = forms.URLField(required=True)
 
     class Meta:
-        fields = (
-            "file",
-            "urls"
-        )
+        fields = ("url",)

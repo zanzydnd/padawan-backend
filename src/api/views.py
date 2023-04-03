@@ -43,8 +43,13 @@ class UserApiViewModelSet(viewsets.ModelViewSet):
 
 
 class ReceiveSubmissionResults(CreateAPIView):
-    serializer_class = SubmissionTestResult
-
     def post(self, request, *args, **kwargs):
+        print(request.data)
+        return Response(status=201, data={})
+
+
+class ReceiveStaticAnalysisResults(CreateAPIView):
+    def post(self, request, *args, **kwargs):
+        print(self.kwargs.get("submission_id"))
         print(request.data)
         return Response(status=201, data={})

@@ -7,6 +7,7 @@ class StepSortableInline(NestedStackedInline):
     model = AlgScenarioStep
     extra = 0
     classes = ["wide", ]
+    fields = ("input", "expected", "time")
 
 
 class AlgScenarioAdmin(NestedModelAdmin):

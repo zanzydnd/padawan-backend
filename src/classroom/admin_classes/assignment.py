@@ -7,7 +7,16 @@ from testing.models import Scenario, AlgScenario
 class AssignmentAdmin(admin.ModelAdmin):
     db_model = Assignment
     list_max_show_all = 100
-    default_fields = ["name", "description", "assigment_type", "max_points", "one_try", "task_file", "classroom"]
+    default_fields = [
+        "name",
+        "description",
+        "assigment_type",
+        "max_points",
+        "one_try",
+        "task_file",
+        "classroom",
+        "static_analysis_blocks"
+    ]
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)

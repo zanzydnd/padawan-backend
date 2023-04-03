@@ -3,7 +3,7 @@ from django.contrib.staticfiles.urls import static
 from django.conf import settings
 # from .views import IndexView
 from app.views import SignUpView, CustomLoginView, logout_view, IndexView, ClassroomListView, ClassroomDetailView, \
-    AssignmentListView, AssignmentDetailView
+    AssignmentListView, AssignmentDetailView, SubmissionCreateView
 
 urlpatterns = [
     path('', IndexView.as_view(), name='main_page'),
@@ -16,7 +16,7 @@ urlpatterns = [
 
     path("assignment/", AssignmentListView.as_view(), name="assignment_list"),
     path("assignment/<int:pk>/", AssignmentDetailView.as_view(), name="assignment_detail"),
-    path("assignment/<int:assinment_id>/submit", AssignmentDetailView.as_view(), name="submit_assignment")
+    path("assignment/<int:assignment_id>/submit", SubmissionCreateView.as_view(), name="submit_assignment")
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

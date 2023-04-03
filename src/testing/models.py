@@ -80,6 +80,7 @@ class AlgScenario(models.Model):
 class AlgScenarioStep(Orderable):
     input = models.TextField(verbose_name="Подается на вход")
     expected = models.TextField(verbose_name="Ожидаемый результат")
+    time = models.DurationField(null=True)
 
     scenario = models.ForeignKey(AlgScenario, related_name="steps", verbose_name="Сценарий", on_delete=models.CASCADE)
 

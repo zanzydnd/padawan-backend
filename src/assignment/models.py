@@ -3,7 +3,7 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 from classroom.models import Classroom
-from testing.models import Scenario, AlgScenario
+from testing.models import Scenario, AlgScenario, Step, AlgScenarioStep
 
 User = get_user_model()
 
@@ -25,10 +25,9 @@ class Assignment(models.Model):
 
     max_points = models.PositiveIntegerField()
 
-    static_analysis_blocks = models.ManyToManyField(to="assignment.StaticCodeAnalysisBlock",
-                                                    through="assignment.StaticCodeAnalysisPoint",
-                                                    related_name="assignments")
-    submissions = models.ManyToManyField(to=User, through="AssignmentSubmission", )
+    static_analysis_blocks = models.ManyToManyField(to="assignment.StaticCodeAnalysisBlock", related_name="assignments",
+                                                    verbose_name="Блоки статического анализа", blank=True)
+    # submissions = models.ManyToManyField(to=User, through="AssignmentSubmission", )
 
     task_file = models.FileField(verbose_name="Файл с Заданием", upload_to="tasks", null=True, blank=True)
 
@@ -40,22 +39,39 @@ class Assignment(models.Model):
 
 
 class AssignmentSubmission(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE,related_name="submissions")
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name="submissions")
     status = models.CharField(max_length=25, default="В процессе")
-    date = models.DateField(auto_created=True)  # дата поступления
+    date = models.DateField(auto_now_add=True)  # дата поступления
+
+    git_url = models.URLField(null=True)
 
     def __str__(self):
         return f"{self.student.name} - {self.assignment.name}"
 
 
-class StaticCodeAnalysisPoint(models.Model):
-    block = models.ForeignKey("assignment.StaticCodeAnalysisBlock", on_delete=models.CASCADE)
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+class AlgSubmissionResults(models.Model):
+    submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
+    step = models.ForeignKey(AlgScenarioStep, on_delete=models.CASCADE)
+    success = models.BooleanField(default=True)
 
-    max_points = models.PositiveIntegerField()
+
+class ApiSubmissionResults(models.Model):
+    submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
+    step = models.ForeignKey(Step, on_delete=models.CASCADE)
+    success = models.BooleanField(default=True)
 
 
 class StaticCodeAnalysisBlock(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Блок Статического анализа"
+        verbose_name_plural = "Блоки Статического анализа"
+
+
+class StaticSubmissionResults(models.Model):
+    submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
+    block = models.ForeignKey(StaticCodeAnalysisBlock, on_delete=models.CASCADE)
+    result = models.TextField()

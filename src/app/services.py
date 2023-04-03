@@ -6,8 +6,9 @@ from django.shortcuts import get_object_or_404
 
 from app.exceptions import SubmissionException
 from app.forms import SubmitAssignmentForm
-from assignment.models import Assignment
+from assignment.models import Assignment, AssignmentSubmission
 from classroom.models import Classroom
+from .tasks import send_submission
 
 User = get_user_model()
 
@@ -38,12 +39,6 @@ class AssigmentService:
 
 
 class SubmissionService:
-    def _submit_alg_task(self, assignment: Assignment, user: User, url: str):
-        pass
-
-    def _submit_api_task(self, assignment: Assignment, user: User, file):
-        pass
-
     def _validate_submission(self, assignment: Assignment, user: User):
         if assignment.one_try and assignment.submissions.filter(student=user).exists():
             raise SubmissionException("Задание можно сдавать только один раз.")
@@ -54,12 +49,11 @@ class SubmissionService:
         assignment = get_object_or_404(Assignment, id=assignment_id)
 
         self._validate_submission(assignment, user)
-        SubmissionThrough = assignment.submissions.through
-        SubmissionThrough.objects.create(
+        submission = AssignmentSubmission.objects.create(
             assignment=assignment,
             student=user,
-            status="Проверяется"
+            status="Проверяется",
+            git_url=form.cleaned_data.get("url")
         )
-        if assignment.assigment_type == Assignment.Type.api:
-            return self._submit_api_task(assignment, user, form.url)
-        return self._submit_alg_task(assignment, user, form.file)
+        send_submission.delay(submission_id=submission.id)
+        return submission

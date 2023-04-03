@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView
 
@@ -110,18 +111,19 @@ class AssignmentDetailView(LoginRequiredMixin, DetailView):
         return self.service.get_service_by_id(id=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
-        send_submission.delay(submission_id=3, github_url="https://gitlab.com/dane4kq/technokratos-test")
         context = super().get_context_data(**kwargs)
         return context
 
 
-class SubmissionCreateView(LoginRequiredMixin, CreateView):
+class SubmissionCreateView(LoginRequiredMixin, View):
     form_class = SubmitAssignmentForm
     service = SubmissionService()
     template_name = "app/task_detail.html"
 
     def post(self, request, *args, **kwargs):
-        Form = self.get_form_class()
-        form = Form(request.POST, request.FILES)
+        Form = self.form_class
+        form = Form(request.POST)
         if form.is_valid():
-            self.service.submit_task(form, request.user, self.kwargs.get("assinment_id"))
+            self.service.submit_task(form, request.user, self.kwargs.get("assignment_id"))
+
+        return redirect(reverse("assignment_detail", kwargs={"pk": self.kwargs.get("assignment_id")}))
