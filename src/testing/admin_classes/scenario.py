@@ -72,7 +72,7 @@ class ScenarioAdmin(NestedModelAdmin):
                 scenario_dict = imported_file_to_dict(request.FILES["file"])
                 scenario, list_of_steps = scenario_dict_to_scenario_db(scenario_dict)
                 return HttpResponseRedirect(
-                    reverse("admin:testing_scenario_change", kwargs={"object_id": scenario.id}))
+                    reverse("admin:testing_scenario_changelist"))
             except ImportingFileException as e:
                 messages.error(request, e)
         form = ImportFileForm()

@@ -1,0 +1,80 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="card mb-3 w-100">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <img style="height: 200px;" src="{% static 'custom/img.png' %}" class="img-fluid rounded-start"
+                     alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ students_name }}</h5>
+                    <p class="btn btn-primary">Баллы: {{ stud_grade }}/{{ max_grade }}</p>
+                    <p class="card-text">Zadanie 1 </p>
+                    <p class="card-text"><small class="text-muted">Сдано 21.11.2222 13:31:23</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scenarios-container w-100" style="display: flex; flex-wrap: wrap;  justify-content: space-around;">
+        {% for scenario in scenarios %}
+            <div class="card" style="width: 40rem;">
+                <div class="card-header" style="background-color: aqua">
+                    {{ scenario.name }}
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for step in scenario.steps %}
+                        {% if step.need_to_accordion %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne" style="color: white;">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse{{ step.id }}"
+                                            aria-expanded="true" aria-controls="collapseOne"
+                                            style="background-color: tomato; color: black">
+                                        {{ step.name }}
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ step.id }}" class="accordion-collapse collapse show"
+                                     aria-labelledby="headingOne"
+                                     data-bs-parent="#accordionExample">
+                                    {% for submission_result in step.submission_results %}
+                                        {% if not submission_result.success %}
+                                            <div class="accordion-body">
+                                                {% if submission_result.message != "Необходимо поправить предыдущие шаги." %}
+                                                    <strong>Заголовки студента</strong>
+                                                    <p>{{ submission_result.students_headers }}</p>
+                                                    {% if submission_result.validator_allowed_response_statuses %}
+                                                        <strong>Статус Ответа</strong>
+                                                        <p>{{ submission_result.students_status_code }}</p>
+                                                        <strong>Допустимые статусы ответа</strong>
+                                                        <p>{{ submission_result.validator_allowed_response_statuses }}</p>
+                                                    {% endif %}
+                                                    {% if submission_result.validator_expected_response_body %}
+                                                        <strong>Результат Ученика</strong>
+                                                        <p>{{ submission_result.student_body }}</p>
+                                                        <strong>Ожидаемый результат</strong>
+                                                        <p>{{ submission_result.validator_expected_response_body }}</p>
+                                                    {% endif %}
+                                                    {% if submission_result.validator_timeout %}
+                                                        <strong>Допустимое время отклика</strong>
+                                                        <p>{{ submission_result.validator_timeout }}</p>
+                                                    {% endif %}
+                                                {% endif %}
+                                                <p>{{ submission_result.message }}</p>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <li class="list-group-item" style="background-color: lightgreen;">{{ step.name }}</li>
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

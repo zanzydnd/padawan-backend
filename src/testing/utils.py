@@ -109,8 +109,9 @@ def scenario_dict_to_scenario_db(imported: dict) -> tuple[Scenario, List[Step]]:
     print(imported)
     steps_in_order = []
     for i, step in enumerate(imported.get("tests")):
+        print(f"{step.get('name')} {i}")
         validators = step.pop("validators")
-        step_db = Step(order=i, **step, scenario=scenario)
+        step_db = Step(**step, scenario=scenario)
         step_db.save()
         for validator_dct in validators:
             StepValidator.objects.create(
@@ -138,6 +139,7 @@ def scenario_db_to_dict(scenario: Scenario) -> dict:
                 "expected_response_body": validator.expected_response_body,
                 "timeout": validator.timeout,
                 "points": validator.points,
+                "id": validator.id
             }
             for validator in step.validators.all()
         ]

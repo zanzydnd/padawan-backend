@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.serializers import UserCreateSerializer, UserSerializer, SubmissionTestResult
+from app.tasks import process_submission_result, process_submission_result_analysis
 
 User = get_user_model()
 
@@ -44,12 +45,14 @@ class UserApiViewModelSet(viewsets.ModelViewSet):
 
 class ReceiveSubmissionResults(CreateAPIView):
     def post(self, request, *args, **kwargs):
-        print(request.data)
+        process_submission_result.delay(data=request.data)
         return Response(status=201, data={})
 
 
 class ReceiveStaticAnalysisResults(CreateAPIView):
     def post(self, request, *args, **kwargs):
-        print(self.kwargs.get("submission_id"))
-        print(request.data)
+        process_submission_result_analysis.delay(
+            data=request.data,
+            submission_id=self.kwargs.get("submission_id")
+        )
         return Response(status=201, data={})

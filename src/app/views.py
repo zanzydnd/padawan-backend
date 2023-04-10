@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView
 
-from assignment.models import Assignment
+from assignment.models import Assignment, AssignmentSubmission
 from classroom.models import Classroom
 from .forms import SignUpForm, SubmitAssignmentForm
 from .services import ClassroomService, AssigmentService, SubmissionService
@@ -127,3 +127,75 @@ class SubmissionCreateView(LoginRequiredMixin, View):
             self.service.submit_task(form, request.user, self.kwargs.get("assignment_id"))
 
         return redirect(reverse("assignment_detail", kwargs={"pk": self.kwargs.get("assignment_id")}))
+
+
+class SubmissionDetailView(LoginRequiredMixin, DetailView):
+    login_url = "/auth"
+    model = AssignmentSubmission
+
+    def get_template_names(self):
+        if self.request.user.is_teacher(): return ["app/submission_details_teacher.html", ]
+        return ["app/submission_details_student.html", ]
+
+    def _get_api_context_data(self, context, **kwargs):
+        context["scenarios"] = []
+
+        max_grade = 0
+        stud_grade = 0
+        for scenario in self.object.assignment.api_scenarios.all():
+            to_append_scenario = {"id": scenario.id, "name": scenario.name, "steps": []}
+
+            for step in scenario.steps.all():
+                to_append_step = {"id": step.id, "name": step.name, "submission_results": [],
+                                  "need_to_accordion": False}
+
+                for validator in step.validators.all():
+                    max_grade += validator.points
+
+                    for submission_validated in validator.validated_submissions.filter(submission=self.object):
+                        to_append_submission_result = {
+                            "id": submission_validated,
+                            "success": submission_validated.success,
+                            "students_headers": submission_validated.headers,
+                            "student_body": submission_validated.body,
+                            "message": submission_validated.message,
+                            "students_status_code": submission_validated.status,
+                            "validator_allowed_response_statuses": validator.allowed_response_statuses,
+                            "validator_expected_response_body": validator.expected_response_body,
+                            "validator_timeout": validator.timeout
+                        }
+                        if submission_validated.success:
+                            stud_grade += validator.points
+                        else:
+                            to_append_step["need_to_accordion"] = True
+                        to_append_step["submission_results"].append(to_append_submission_result)
+                to_append_scenario["steps"].append(to_append_step)
+
+            context["scenarios"].append(
+                to_append_scenario
+            )
+        context["max_grade"] = max_grade
+        context["stud_grade"] = stud_grade
+
+    def _get_alg_context_data(self, context, **kwargs):
+        pass
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["students_name"] = f"{self.object.student.first_name} {self.object.student.last_name}"
+
+        if self.object.assignment.Type.api == self.object.assignment.assigment_type:
+            self._get_api_context_data(context, **kwargs)
+        else:
+            self._get_alg_context_data(context, **kwargs)
+
+        return context
+
+    def get_object(self, queryset=None):
+        return AssignmentSubmission.objects.filter(id=self.kwargs.get("id")) \
+            .select_related("assignment", "student") \
+            .prefetch_related("assignment__api_scenarios", "assignment__alg_scenarios",
+                              "assignment__api_scenarios__steps",
+                              "assignment__api_scenarios__steps__validators", "assignment__alg_scenarios__steps",
+                              "results", "results__validator") \
+            .first()

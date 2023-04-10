@@ -3,7 +3,7 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 from classroom.models import Classroom
-from testing.models import Scenario, AlgScenario, Step, AlgScenarioStep
+from testing.models import Scenario, AlgScenario, Step, AlgScenarioStep, StepValidator
 
 User = get_user_model()
 
@@ -39,7 +39,7 @@ class Assignment(models.Model):
 
 
 class AssignmentSubmission(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE,related_name="submissions")
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="submissions")
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name="submissions")
     status = models.CharField(max_length=25, default="В процессе")
     date = models.DateField(auto_now_add=True)  # дата поступления
@@ -54,12 +54,18 @@ class AlgSubmissionResults(models.Model):
     submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
     step = models.ForeignKey(AlgScenarioStep, on_delete=models.CASCADE)
     success = models.BooleanField(default=True)
+    time = models.DurationField(null=True)
+    actual = models.TextField(null=True)
 
 
 class ApiSubmissionResults(models.Model):
-    submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
-    step = models.ForeignKey(Step, on_delete=models.CASCADE)
+    submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True, related_name="results")
+    validator = models.ForeignKey(StepValidator, on_delete=models.CASCADE, null=True, related_name="validated_submissions")
     success = models.BooleanField(default=True)
+    headers = models.JSONField(null=True)
+    body = models.JSONField(null=True)
+    message = models.TextField(null=True)
+    status = models.TextField(null=True)
 
 
 class StaticCodeAnalysisBlock(models.Model):
