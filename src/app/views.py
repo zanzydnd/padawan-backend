@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView
 
-from assignment.models import Assignment, AssignmentSubmission
+from assignment.models import Assignment, AssignmentSubmission, AlgSubmissionResults
 from classroom.models import Classroom
 from .forms import SignUpForm, SubmitAssignmentForm
 from .services import ClassroomService, AssigmentService, SubmissionService
@@ -112,6 +112,7 @@ class AssignmentDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["submissions"] = AssignmentSubmission.objects.filter(student=self.request.user)
         return context
 
 
@@ -134,8 +135,14 @@ class SubmissionDetailView(LoginRequiredMixin, DetailView):
     model = AssignmentSubmission
 
     def get_template_names(self):
-        if self.request.user.is_teacher(): return ["app/submission_details_teacher.html", ]
-        return ["app/submission_details_student.html", ]
+        if self.object.assignment.Type.api == self.object.assignment.assigment_type:
+            if self.request.user.is_teacher():
+                return ["app/submission_details_teacher.html", ]
+            return ["app/submission_details_student.html"]
+
+        if self.request.user.is_teacher():
+            return ["app/submission_details_alg_teacher.html", ]
+        return ["app/submission_details_alg_student.html", ]
 
     def _get_api_context_data(self, context, **kwargs):
         context["scenarios"] = []
@@ -178,12 +185,41 @@ class SubmissionDetailView(LoginRequiredMixin, DetailView):
         context["stud_grade"] = stud_grade
 
     def _get_alg_context_data(self, context, **kwargs):
-        pass
+        context["scenarios"] = []
+        max_grade = 0
+        stud_grade = 0
+
+        for scenario in self.object.assignment.alg_scenarios.all():
+            to_append_scenario = {"id": scenario.id, "name": scenario.name, "steps": []}
+
+            for step in scenario.steps.all():
+                submission = AlgSubmissionResults.objects.get(submission=self.object, step=step)
+
+                to_append_step = {
+                    "id": step.id,
+                    "name": step.name,
+                    "need_to_accordion": not submission.success,
+                    "success": submission.success,
+                    "actual": submission.actual,
+                    "input": step.input,
+                    "expected": step.expected,
+                    "max_time": step.time.seconds,
+                    "actual_time": submission.time.seconds
+                }
+                max_grade += step.points
+                if submission.success:
+                    stud_grade += step.points
+
+                to_append_scenario["steps"].append(to_append_step)
+
+            context["scenarios"].append(to_append_scenario)
+        context["max_grade"] = max_grade
+        context["stud_grade"] = stud_grade
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["students_name"] = f"{self.object.student.first_name} {self.object.student.last_name}"
-
+        context["assignment_name"] = self.object.assignment.name
         if self.object.assignment.Type.api == self.object.assignment.assigment_type:
             self._get_api_context_data(context, **kwargs)
         else:

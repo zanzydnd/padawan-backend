@@ -31,21 +31,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row"><a href="#">1</a></th>
-                    <td>11.11.2000</td>
-                    <td>11.11.2000</td>
-                </tr>
-                <tr class="table-danger">
-                    <th scope="row">1</th>
-                    <td>11.11.2000</td>
-                    <td>11.11.2000</td>
-                </tr>
-                <tr class="table-success">
-                    <th scope="row">1</th>
-                    <td>11.11.2000</td>
-                    <td>11.11.2000</td>
-                </tr>
+                {% for submission in submissions %}
+                    <tr>
+                        <th scope="row"><a href="{% url 'submission_detail' submission.id%}">{{ forloop.counter }}</a></th>
+                        <td>{{ submission.date }}</td>
+                        <td>{{ submission.status }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>

@@ -60,13 +60,8 @@ def _process_submission_alg(submission: AssignmentSubmission, data: dict):
             AlgSubmissionResults.objects.create(
                 submission=submission,
                 step_id=step_id,
-                success=step_data.get("time").get("success"),
+                success=step_data.get("time").get("success") and step_data.get("comparison").get("success"),
                 time=timedelta(seconds=step_data.get("time").get("actual")),
-            )
-            AlgSubmissionResults.objects.create(
-                submission=submission,
-                step_id=step_id,
-                success=step_data.get("comparison").get("success"),
                 actual=step_data.get("comparison").get("actual"),
             )
 

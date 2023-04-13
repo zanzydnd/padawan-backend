@@ -1,10 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'app/base.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block content %}
+    <div class="card mb-3 w-100">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <img style="height: 200px;" src="{% static 'custom/img.png' %}" class="img-fluid rounded-start"
+                     alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ students_name }}</h5>
+                    <p class="btn btn-primary">Баллы: {{ stud_grade }}/{{ max_grade }}</p>
+                    <p class="card-text">{{ assignment_name }}</p>
+                    <p class="card-text"><small class="text-muted">Сдано 21.11.2222 13:31:23</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scenarios-container w-100" style="display: flex; flex-wrap: wrap;  justify-content: space-around;">
+        {% for scenario in scenarios %}
+            <div class="card" style="width: 40rem;">
+                <div class="card-header" style="background-color: aqua">
+                    {{ scenario.name }}
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for step in scenario.steps %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne" style="color: white;">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse{{ step.id }}"
+                                        aria-expanded="true" aria-controls="collapseOne"
+                                        style="{% if step.need_to_accordion %}background-color: tomato;{% else %}background-color: lightgreen;{% endif %} color: black">
+                                    {{ step.name }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ step.id }}" class="accordion-collapse collapse show"
+                                 aria-labelledby="headingOne"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <strong>На вход</strong>
+                                    <p>{{ step.input }}</p>
+                                    <strong>Результат Студента</strong>
+                                    <p>{{ step.actual }}</p>
+                                    <strong>Ожидаемый результат</strong>
+                                    <p>{{ step.expected }}</p>
+                                    <strong>Максимальное время</strong>
+                                    <p>{{ step.max_time }}</p>
+                                    <strong>Время студента</strong>
+                                    <p>{{ step.actual_time }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        </ul>
+                    {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

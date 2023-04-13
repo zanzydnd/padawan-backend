@@ -52,7 +52,7 @@ class AssignmentSubmission(models.Model):
 
 class AlgSubmissionResults(models.Model):
     submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
-    step = models.ForeignKey(AlgScenarioStep, on_delete=models.CASCADE)
+    step = models.ForeignKey(AlgScenarioStep, on_delete=models.CASCADE, verbose_name="submission_results")
     success = models.BooleanField(default=True)
     time = models.DurationField(null=True)
     actual = models.TextField(null=True)
@@ -60,7 +60,8 @@ class AlgSubmissionResults(models.Model):
 
 class ApiSubmissionResults(models.Model):
     submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True, related_name="results")
-    validator = models.ForeignKey(StepValidator, on_delete=models.CASCADE, null=True, related_name="validated_submissions")
+    validator = models.ForeignKey(StepValidator, on_delete=models.CASCADE, null=True,
+                                  related_name="validated_submissions")
     success = models.BooleanField(default=True)
     headers = models.JSONField(null=True)
     body = models.JSONField(null=True)
