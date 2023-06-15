@@ -1,5 +1,5 @@
 {
-  "name": "Scenario",
+  "name": "Scenario 2",
   "tests": [
     {
       "method": "POST",
@@ -13,7 +13,7 @@
             201,
             200
           ],
-          "expected_response_body": "{\"email\":\"test_user@mail.ru\",\"password\": null,\"name\": \"имя\",\"id\": 1}",
+          "expected_response_body": "{\"email\":\"test_user@mail.ru\",\"password\": null,\"name\": \"имя\",\"id\": 2}",
           "timeout": 100,
           "points": 1
         }
