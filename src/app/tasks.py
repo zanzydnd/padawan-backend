@@ -85,6 +85,15 @@ def _process_submission_api(submission: AssignmentSubmission, data: dict):
                             message="Необходимо поправить предыдущие шаги.",
                         )
                     continue
+                elif isinstance(validator_results, str):
+                    for validator in StepValidator.objects.filter(step__scenario_id=scenario_id, step__name=test_name):
+                        ApiSubmissionResults.objects.create(
+                            submission=submission,
+                            validator=validator,
+                            success=False,
+                            message=validator_results,
+                        )
+                    continue
                 ApiSubmissionResults.objects.create(
                     submission=submission,
                     validator_id=validator_results.get("id"),
