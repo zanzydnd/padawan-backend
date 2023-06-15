@@ -71,7 +71,11 @@ class ApiSubmissionResults(models.Model):
 
 class StaticCodeAnalysisBlock(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    code_name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name = "Блок Статического анализа"
@@ -80,5 +84,7 @@ class StaticCodeAnalysisBlock(models.Model):
 
 class StaticSubmissionResults(models.Model):
     submission = models.ForeignKey(AssignmentSubmission, on_delete=models.SET_NULL, null=True)
-    block = models.ForeignKey(StaticCodeAnalysisBlock, on_delete=models.CASCADE)
+    block = models.ForeignKey(StaticCodeAnalysisBlock, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=100, default='name')
     result = models.TextField()
+    mode = models.CharField(max_length=200,default='success')

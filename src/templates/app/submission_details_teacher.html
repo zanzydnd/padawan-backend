@@ -73,5 +73,15 @@
             </div>
         {% endfor %}
     </div>
+    <div id="static_analysis_block">
+        <h2>
+            Статический анализ
+        </h2>
+        {% for block in analysis_blocks %}
+            <div style="display: flex; flex-direction: row">
+                <p>{{ block.name }} </p>  <span class="badge rounded-pill bg-{{ block.mode }}" style="height: 20px">{{ block.result }}</span>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
 

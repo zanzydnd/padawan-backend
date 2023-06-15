@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView
 
-from assignment.models import Assignment, AssignmentSubmission, AlgSubmissionResults
+from assignment.models import Assignment, AssignmentSubmission, AlgSubmissionResults, StaticSubmissionResults
 from classroom.models import Classroom
 from .forms import SignUpForm, SubmitAssignmentForm
 from .services import ClassroomService, AssigmentService, SubmissionService
@@ -184,6 +184,7 @@ class SubmissionDetailView(LoginRequiredMixin, DetailView):
             )
         context["max_grade"] = max_grade
         context["stud_grade"] = stud_grade
+        context['analysis_blocks'] = StaticSubmissionResults.objects.filter(submission=self.object)
 
     def _get_alg_context_data(self, context, **kwargs):
         context["scenarios"] = []

@@ -1,6 +1,7 @@
 from datetime import timedelta
 
-from assignment.models import AssignmentSubmission, AlgSubmissionResults, ApiSubmissionResults
+from assignment.models import AssignmentSubmission, AlgSubmissionResults, ApiSubmissionResults, StaticCodeAnalysisBlock, \
+    StaticSubmissionResults
 from padawan.celery_farmer import celery_app
 from testing.models import StepValidator
 from testing.utils import scenario_db_to_dict
@@ -41,16 +42,19 @@ def send_submission(submission_id: int):
             }
             for scenario in submission.assignment.alg_scenarios.all()
         ]
+        print(to_send)
         celery_app.send_task('remote.test_alg_submission', kwargs=to_send)
 
     if submission.assignment.static_analysis_blocks.exists():
         analysis_kwargs = {
             "submission_id": submission.id,
             "git_url": submission.git_url,
-            "analysis_steps": submission.assignment.static_analysis_blocks.all().values_list("name", flat=True)
+            "analysis_steps": list(
+                submission.assignment.static_analysis_blocks.all().values_list("code_name", flat=True)
+            )
         }
 
-        celery_app.send_task('remote.static_analysis', kwargs=analysis_kwargs)
+        celery_app.send_task('static.static_analysis', kwargs=analysis_kwargs)
 
 
 def _process_submission_alg(submission: AssignmentSubmission, data: dict):
@@ -113,4 +117,71 @@ def process_submission_result(data: dict):
 
 @celery_app.task(name="web.process_submission_result_analysis")
 def process_submission_result_analysis(data: dict, submission_id: int):
-    pass
+    submission = AssignmentSubmission.objects.get(id=submission_id)
+    analysis_blocks_in_assignment_queryset = StaticCodeAnalysisBlock.objects.filter(
+        assignments=submission.assignment
+    )
+
+    for block in analysis_blocks_in_assignment_queryset:
+        if block.code_name in data:
+            StaticSubmissionResults.objects.create(
+                submission=submission,
+                name=block.name,
+                result='Успешно',
+                mode='success'
+            )
+        else:
+            StaticSubmissionResults.objects.create(
+                submission=submission,
+                name=block.name,
+                result='Не успешно',
+                mode='danger'
+            )
+
+    if data.get('duplicates_count') is not None:
+        StaticSubmissionResults.objects.create(
+            submission=submission,
+            name='Колво предупреждении о дубликатах',
+            result=data.get('duplicates_count'),
+            mode=(
+                'danger'
+                if data.get('duplicates_count') > 10
+                else 'success'
+            )
+        )
+
+    if data.get('conventions_count') is not None:
+        StaticSubmissionResults.objects.create(
+            submission=submission,
+            name='Колво нарушенных PEP8 пунктов',
+            result=data.get('conventions_count'),
+            mode=(
+                'danger'
+                if data.get('conventions_count') > 10
+                else 'success'
+            )
+        )
+
+    min_mi_index = 100
+    min_mi_index_filename = ''
+
+    for key in data:
+        if '/' in key:
+            if data.get(key).get('mi_index') < min_mi_index:
+                min_mi_index = data.get(key).get('mi_index')
+                min_mi_index_filename = key
+
+    StaticSubmissionResults.objects.create(
+        submission=submission,
+        name='Минимальный индекс поддерживаемости файлов.',
+        result=(
+            f'Обратить внимание на файл: {min_mi_index_filename}'
+            if min_mi_index_filename
+            else ''
+        ),
+        mode=(
+            'danger'
+            if min_mi_index < 70
+            else 'success'
+        )
+    )

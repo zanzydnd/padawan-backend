@@ -12,4 +12,5 @@ celery_app.autodiscover_tasks(packages=['app'])
 celery_app.conf.task_routes = {
     'web.*': {'queue': 'web_queue'},
     'remote.*': {'queue': 'remote_queue'},
+    'static.*': {'queue': 'static'},
 }

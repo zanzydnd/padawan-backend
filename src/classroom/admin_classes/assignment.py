@@ -17,6 +17,7 @@ class AssignmentAdmin(admin.ModelAdmin):
         "classroom",
         "static_analysis_blocks"
     ]
+    filter_horizontal = ("static_analysis_blocks",)
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
